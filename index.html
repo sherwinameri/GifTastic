@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>GifTastic</title>
+
+  <style>
+
+  #buttons {
+    background-color: #4CAF50;
+
+  </style>
+
+</head>
+
+<body>
+  <div id="buttons"></div>
+
+    <form id="topic-form">
+      <label for="topic-input">Add a Topic</label>
+      <input type="text" id="topic-input"><br>
+      <input id="add-topic" type="submit" value="Submit">
+    </form>
+
+  <div id="gifs-appear-here"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript">
+
+    var topics = ["Music","Politics","Television","Technology","Sports","Nightlife"] ;
+
+    function putButtons() {
+
+    $("#buttons").empty();
+
+    for (var i=0; i<topics.length; i++) {
+        var aButton = $("<button/>");
+        aButton.text(topics[i]);
+        $('#buttons').append(aButton);
+    }
+
+  }
+
+        // when add topic is clicked
+    $("#add-topic").on("click", function(event) {
+        event.preventDefault();
+        // textbox input
+        var topic = $("#topic-input").val().trim();
+
+        // new topic is added to array
+        topics.push(topic);
+
+        // processes the array
+        putButtons();
+      });
+
+
+
+    // below are the button click & API segments, which I did not get fully working
+
+    $("button").on("click", function() {
+      var someTopic = $(this).attr("data-person");
+      var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
+        someTopic + "&api_key=dc6zaTOxFJmzC&limit=10" ;
+      console.log(queryURL);
+
+      $.ajax({
+          url: queryURL,
+          method: "GET"
+        })
+        .done(function(response) {
+          var results = response.data;
+
+          for (var i = 0; i < results.length; i++) {
+            var gifDiv = $("<div class='item'>");
+
+            var rating = results[i].rating;
+
+            var p = $("<p>").text("Rating: " + rating);
+
+            var topicImage = $("<img>");
+            // $("<img>") is "<img></img>""
+            topicImage.attr("src", results[i].images.fixed_height.url);
+
+            gifDiv.prepend(p);
+            gifDiv.prepend(topicImage);
+
+            $("#gifs-appear-here").prepend(gifDiv);
+          }
+        });
+    });
+
+        putButtons();
+
+    // Below are the animation features for the clicked images. I have it commented out as it affected my buttons bar
+
+    // $(".gif").on("click", function() {
+    //   var state = $(this).attr("data-state") ;
+
+    //   if (state==="still") {
+    //       $(this).attr("src", $(this).attr("data-animate")) ;
+    //       $(this).attr("data-state", "animate");
+    //     }
+
+    //   else {
+    //       $(this).attr("src", $(this).attr("data-still"));
+    //       $(this).attr("data-state", "still");
+    //     }
+    // }
+
+
+
+  </script>
+</body>
+
+</html>
